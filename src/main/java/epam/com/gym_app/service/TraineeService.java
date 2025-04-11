@@ -1,9 +1,6 @@
 package epam.com.gym_app.service;
 
-import epam.com.gym_app.dto.ChangeLoginDto;
-import epam.com.gym_app.dto.LoginRequestDto;
-import epam.com.gym_app.dto.RegistrationResponseDto;
-import epam.com.gym_app.dto.UpdateTraineeTrainersListDto;
+import epam.com.gym_app.dto.*;
 import epam.com.gym_app.dto.trainee.TraineeCreateDto;
 import epam.com.gym_app.dto.trainee.TraineeDto;
 import epam.com.gym_app.dto.trainee.TraineeUpdateDto;
@@ -16,7 +13,7 @@ import java.util.List;
 public interface TraineeService {
     RegistrationResponseDto create(TraineeCreateDto traineeCreateDto);
 
-    void login(LoginRequestDto dto);
+    TokenResponse login(LoginRequestDto dto);
 
 
     TraineeDto getTraineeByUsername(String username);

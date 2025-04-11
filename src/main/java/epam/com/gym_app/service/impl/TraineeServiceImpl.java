@@ -1,10 +1,8 @@
 package epam.com.gym_app.service.impl;
 
 
-import epam.com.gym_app.dto.ChangeLoginDto;
-import epam.com.gym_app.dto.LoginRequestDto;
-import epam.com.gym_app.dto.RegistrationResponseDto;
-import epam.com.gym_app.dto.UpdateTraineeTrainersListDto;
+import epam.com.gym_app.config.security.JwtTokenService;
+import epam.com.gym_app.dto.*;
 import epam.com.gym_app.dto.trainee.TraineeCreateDto;
 import epam.com.gym_app.dto.trainee.TraineeDto;
 import epam.com.gym_app.dto.trainee.TraineeUpdateDto;
@@ -26,6 +24,9 @@ import epam.com.gym_app.service.TraineeService;
 import epam.com.gym_app.util.UsernamePasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -42,6 +43,9 @@ public class TraineeServiceImpl implements TraineeService {
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
     private final TrainerRepository trainerRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenService jwtTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public RegistrationResponseDto create(TraineeCreateDto traineeCreateDto) {
@@ -50,7 +54,7 @@ public class TraineeServiceImpl implements TraineeService {
         String username = usernamePasswordGenerator
                 .generateUsername(traineeCreateDto.firstName(), traineeCreateDto.lastName());
         String password = usernamePasswordGenerator.generatePassword();
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setUserName(username);
         traineeRepository.save(trainee);
         RegistrationResponseDto registrationResponseDto = new RegistrationResponseDto(username, password);
@@ -58,11 +62,13 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public void login(LoginRequestDto dto) {
-        if (!traineeRepository.checkUsernameAndPasswordMatch(dto.username(), dto.password())) {
-            log.warn("Login failed !");
-            throw new AuthenticationException("Username or password is incorrect");
-        }
+    public TokenResponse login(LoginRequestDto dto) {
+        String username = dto.username();
+        String password = dto.password();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        authenticationManager.authenticate(authenticationToken);
+        String token = jwtTokenService.generateToken(username);
+        return new TokenResponse(token);
     }
 
     @Override

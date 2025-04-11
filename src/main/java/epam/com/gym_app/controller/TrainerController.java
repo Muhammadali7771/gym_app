@@ -3,6 +3,7 @@ package epam.com.gym_app.controller;
 import epam.com.gym_app.dto.ChangeLoginDto;
 import epam.com.gym_app.dto.LoginRequestDto;
 import epam.com.gym_app.dto.RegistrationResponseDto;
+import epam.com.gym_app.dto.TokenResponse;
 import epam.com.gym_app.dto.trainer.TrainerCreateDto;
 import epam.com.gym_app.dto.trainer.TrainerDto;
 import epam.com.gym_app.dto.trainer.TrainerUpdateDto;
@@ -61,9 +62,9 @@ public class TrainerController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - authentication failed"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto dto) {
-        trainerService.login(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequestDto dto) {
+        TokenResponse token = trainerService.login(dto);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PutMapping("/change-login")

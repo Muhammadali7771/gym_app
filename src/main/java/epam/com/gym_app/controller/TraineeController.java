@@ -1,9 +1,6 @@
 package epam.com.gym_app.controller;
 
-import epam.com.gym_app.dto.ChangeLoginDto;
-import epam.com.gym_app.dto.LoginRequestDto;
-import epam.com.gym_app.dto.RegistrationResponseDto;
-import epam.com.gym_app.dto.UpdateTraineeTrainersListDto;
+import epam.com.gym_app.dto.*;
 import epam.com.gym_app.dto.trainee.TraineeCreateDto;
 import epam.com.gym_app.dto.trainee.TraineeDto;
 import epam.com.gym_app.dto.trainee.TraineeUpdateDto;
@@ -18,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -82,9 +80,9 @@ public class TraineeController {
     })
     @Counted(value = "api.trainee.login.post", description = "a number of requests to POST /api/trainee endpoint")
     @Timed(value = "api.trainee.login.post.time", description = "time taken for POST /api/trainee endpoint")
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginRequestDto dto) {
-        traineeService.login(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequestDto dto) {
+        TokenResponse token = traineeService.login(dto);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @DeleteMapping

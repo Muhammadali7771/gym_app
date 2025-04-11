@@ -1,9 +1,11 @@
 package epam.com.gym_app.service.impl;
 
 
+import epam.com.gym_app.config.security.JwtTokenService;
 import epam.com.gym_app.dto.ChangeLoginDto;
 import epam.com.gym_app.dto.LoginRequestDto;
 import epam.com.gym_app.dto.RegistrationResponseDto;
+import epam.com.gym_app.dto.TokenResponse;
 import epam.com.gym_app.dto.trainer.*;
 import epam.com.gym_app.dto.training.TrainingDto;
 import epam.com.gym_app.entity.Trainer;
@@ -19,6 +21,9 @@ import epam.com.gym_app.service.TrainerService;
 import epam.com.gym_app.util.UsernamePasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,6 +38,9 @@ public class TrainerServiceImpl implements TrainerService {
     private final UsernamePasswordGenerator usernamePasswordGenerator;
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
+    private final JwtTokenService jwtTokenService;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     public RegistrationResponseDto create(TrainerCreateDto dto){
         Trainer trainer = trainerMapper.toEntity(dto);
@@ -41,16 +49,19 @@ public class TrainerServiceImpl implements TrainerService {
         String password = usernamePasswordGenerator.generatePassword();
         User user = trainer.getUser();
         user.setUserName(username);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         trainerRepository.save(trainer);
         return new RegistrationResponseDto(username, password);
     }
 
     @Override
-    public void login(LoginRequestDto dto){
-        if (!trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.password())){
-            throw new AuthenticationException("username or password is incorrect!");
-        }
+    public TokenResponse login(LoginRequestDto dto){
+        String password = dto.password();
+        String username = dto.username();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        authenticationManager.authenticate(authenticationToken);
+        String token = jwtTokenService.generateToken(username);
+        return new TokenResponse(token);
     }
 
     @Override
