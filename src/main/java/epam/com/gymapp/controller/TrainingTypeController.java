@@ -1,6 +1,6 @@
 package epam.com.gymapp.controller;
 
-import epam.com.gymapp.dto.training_type.TrainingTypeDto;
+import epam.com.gymapp.dto.trainingtype.TrainingTypeDto;
 import epam.com.gymapp.service.TrainingTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +26,7 @@ public class TrainingTypeController {
     @Operation(summary = "Retrieves training types")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieves the training types"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
     public ResponseEntity<List<TrainingTypeDto>> getTrainingTypes() {

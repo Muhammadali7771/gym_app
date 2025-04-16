@@ -12,7 +12,6 @@ import epam.com.gymapp.entity.Trainee;
 import epam.com.gymapp.entity.Trainer;
 import epam.com.gymapp.entity.Training;
 import epam.com.gymapp.entity.User;
-import epam.com.gymapp.exception.AuthenticationException;
 import epam.com.gymapp.exception.ResourceNotFoundException;
 import epam.com.gymapp.mapper.TraineeMapper;
 import epam.com.gymapp.mapper.TrainerMapper;
@@ -82,11 +81,16 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public void changePassword(ChangeLoginDto dto) {
-        if (!traineeRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
+        /*if (!traineeRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
             log.warn("Password change failed");
             throw new AuthenticationException("username or password is incorrect");
-        }
-        traineeRepository.changePassword(dto.username(), dto.newPassword());
+        }*/
+        String username = dto.username();
+        String oldPassword = dto.oldPassword();
+        String newPassword = dto.newPassword();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, oldPassword);
+        authenticationManager.authenticate(authenticationToken);
+        traineeRepository.changePassword(dto.username(), passwordEncoder.encode(newPassword));
     }
 
     @Override

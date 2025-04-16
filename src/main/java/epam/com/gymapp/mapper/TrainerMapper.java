@@ -31,6 +31,7 @@ public class TrainerMapper {
         User user = new User();
         user.setLastName(dto.lastName());
         user.setFirstName(dto.firstName());
+        user.setActive(true);
 
         Trainer trainer = new Trainer();
         Integer trainingTypeId = dto.specializationId();

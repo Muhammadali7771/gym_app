@@ -1,7 +1,7 @@
 package epam.com.gymapp.service.impl;
 
 
-import epam.com.gymapp.dto.training_type.TrainingTypeDto;
+import epam.com.gymapp.dto.trainingtype.TrainingTypeDto;
 import epam.com.gymapp.entity.TrainingType;
 import epam.com.gymapp.exception.ResourceNotFoundException;
 import epam.com.gymapp.mapper.TrainingTypeMapper;

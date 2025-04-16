@@ -40,6 +40,8 @@ create table users (
                        first_name varchar(255) not null,
                        is_active boolean not null,
                        last_name varchar(255) not null,
+                       lock_time timestamp(6),
+                       login_attempts integer,
                        password varchar(255) not null,
                        username varchar(255) not null,
                        primary key (id)
