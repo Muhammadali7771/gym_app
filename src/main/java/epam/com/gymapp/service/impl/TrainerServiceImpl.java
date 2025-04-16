@@ -6,12 +6,13 @@ import epam.com.gymapp.dto.ChangeLoginDto;
 import epam.com.gymapp.dto.LoginRequestDto;
 import epam.com.gymapp.dto.RegistrationResponseDto;
 import epam.com.gymapp.dto.TokenResponse;
-import epam.com.gymapp.dto.trainer.*;
+import epam.com.gymapp.dto.trainer.TrainerCreateDto;
+import epam.com.gymapp.dto.trainer.TrainerDto;
+import epam.com.gymapp.dto.trainer.TrainerUpdateDto;
 import epam.com.gymapp.dto.training.TrainingDto;
 import epam.com.gymapp.entity.Trainer;
 import epam.com.gymapp.entity.Training;
 import epam.com.gymapp.entity.User;
-import epam.com.gymapp.exception.AuthenticationException;
 import epam.com.gymapp.exception.ResourceNotFoundException;
 import epam.com.gymapp.mapper.TrainerMapper;
 import epam.com.gymapp.mapper.TrainingMapper;
@@ -75,11 +76,17 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public void changePassword(ChangeLoginDto dto) {
-        if (!trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
+        /*if (!trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
             log.warn("Login failed !");
             throw new AuthenticationException("username or password is incorrect");
         }
-        trainerRepository.changePassword(dto.username(), dto.newPassword());
+        trainerRepository.changePassword(dto.username(), dto.newPassword());*/
+        String username = dto.username();
+        String oldPassword = dto.oldPassword();
+        String newPassword = dto.newPassword();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, oldPassword);
+        authenticationManager.authenticate(authenticationToken);
+        trainerRepository.changePassword(dto.username(), passwordEncoder.encode(newPassword));
     }
 
     @Override

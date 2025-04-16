@@ -1,6 +1,6 @@
 package epam.com.gymapp.mapper;
 
-import epam.com.gymapp.dto.training_type.TrainingTypeDto;
+import epam.com.gymapp.dto.trainingtype.TrainingTypeDto;
 import epam.com.gymapp.entity.TrainingType;
 import org.springframework.stereotype.Component;
 

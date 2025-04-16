@@ -1,4 +1,4 @@
-package epam.com.gymapp.dto.training_type;
+package epam.com.gymapp.dto.trainingtype;
 
 public record TrainingTypeDto(Integer trainingTypeId, String trainingTypeName) {
 }

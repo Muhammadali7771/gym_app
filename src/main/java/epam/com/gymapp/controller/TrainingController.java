@@ -26,6 +26,7 @@ public class TrainingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully creates new Training"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "Resource not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     }

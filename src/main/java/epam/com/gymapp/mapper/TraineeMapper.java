@@ -24,6 +24,7 @@ public class TraineeMapper {
         User user = new User();
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
+        user.setActive(true);
 
         Trainee trainee = new Trainee();
         trainee.setAddress(dto.address());

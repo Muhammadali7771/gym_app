@@ -33,6 +33,7 @@ public class TraineeController {
     @Operation(summary = "Get trainee with the supplied username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved trainee with the supplied username"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -59,6 +60,7 @@ public class TraineeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated the trainee information"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The Resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -74,7 +76,7 @@ public class TraineeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login successful"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - authentication failed"),
+            @ApiResponse(responseCode = "401", description = "Bad credentials"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
     @Counted(value = "api.trainee.login.post", description = "a number of requests to POST /api/trainee endpoint")
@@ -88,6 +90,7 @@ public class TraineeController {
     @Operation(summary = "Deleting the specific trainee with the supplied username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully deletes the specific trainee"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -103,6 +106,7 @@ public class TraineeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password has been changed successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
     @Counted(value = "api.trainee.change-login.put", description = "a number of requests to PUT /api/trainee/change-login endpoint")
@@ -117,6 +121,7 @@ public class TraineeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updates the trainee's trainer list"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -131,6 +136,7 @@ public class TraineeController {
     @Operation(summary = "Get trainee trainings list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieves the trainings of the trainee supplied with the username by criteria"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -150,6 +156,7 @@ public class TraineeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully activates or deactivates the trainee"),
             @ApiResponse(responseCode = "400", description = "Invalid input provided"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })
@@ -164,6 +171,7 @@ public class TraineeController {
     @Operation(summary = "Get the trainers with is not assigned on trainee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieves trainers which is not assigned on trainee"),
+            @ApiResponse(responseCode = "401", description = "Full authentication is required to access this resource"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found"),
             @ApiResponse(responseCode = "500", description = "Application failed to process the request")
     })

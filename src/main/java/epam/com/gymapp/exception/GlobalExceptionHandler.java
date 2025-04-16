@@ -21,10 +21,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorDto(404, ex.getMessage(), request.getRequestURI()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
+    /*@ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorDto> handleAuthenticationException(AuthenticationException ex, HttpServletRequest request) {
         return new ResponseEntity<>(new ErrorDto(401, ex.getMessage(), request.getRequestURI()), HttpStatus.UNAUTHORIZED);
-    }
+    }*/
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
