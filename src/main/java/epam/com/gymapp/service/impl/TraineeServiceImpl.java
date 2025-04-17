@@ -81,10 +81,6 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public void changePassword(ChangeLoginDto dto) {
-        /*if (!traineeRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
-            log.warn("Password change failed");
-            throw new AuthenticationException("username or password is incorrect");
-        }*/
         String username = dto.username();
         String oldPassword = dto.oldPassword();
         String newPassword = dto.newPassword();
