@@ -10,8 +10,8 @@ import epam.com.gymapp.dto.trainer.TrainerDto;
 import epam.com.gymapp.dto.trainer.TrainerUpdateDto;
 import epam.com.gymapp.entity.Trainer;
 import epam.com.gymapp.entity.Training;
+import epam.com.gymapp.entity.TrainingType;
 import epam.com.gymapp.entity.User;
-import epam.com.gymapp.exception.AuthenticationException;
 import epam.com.gymapp.exception.ResourceNotFoundException;
 import epam.com.gymapp.mapper.TrainerMapper;
 import epam.com.gymapp.mapper.TrainingMapper;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class TrainerServiceTest {
@@ -58,6 +58,8 @@ class TrainerServiceTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private TrainingTypeService trainingTypeService;
 
     @Test
     void create() {
@@ -68,8 +70,10 @@ class TrainerServiceTest {
         String encodedPassword = "werwrffver123fd";
         String generatedPassword = "5555555555";
         String generatedUsername = "Botir.Sobirov";
-
-        Mockito.when(trainerMapper.toEntity(dto)).thenReturn(trainer);
+        TrainingType trainingType = new TrainingType();
+        trainingType.setId(1);
+        Mockito.when(trainingTypeService.getTrainingTypeById(1)).thenReturn(trainingType);
+        Mockito.when(trainerMapper.toEntity(dto, trainingType)).thenReturn(trainer);
         Mockito.when(usernamePasswordGenerator.generateUsername(dto.firstName(), dto.lastName()))
                 .thenReturn(generatedUsername);
         Mockito.when(usernamePasswordGenerator.generatePassword()).thenReturn(generatedPassword);
@@ -78,7 +82,8 @@ class TrainerServiceTest {
 
         RegistrationResponseDto responseDto = trainerService.create(dto);
 
-        Mockito.verify(trainerMapper).toEntity(dto);
+        Mockito.verify(trainingTypeService).getTrainingTypeById(1);
+        Mockito.verify(trainerMapper).toEntity(dto, trainingType);
         Mockito.verify(usernamePasswordGenerator).generateUsername(dto.firstName(), dto.lastName());
         Mockito.verify(usernamePasswordGenerator).generatePassword();
         Mockito.verify(trainerRepository).save(trainer);
@@ -190,24 +195,28 @@ class TrainerServiceTest {
 
     @Test
     void update_Success() {
-        TrainerUpdateDto dto = new TrainerUpdateDto("JOHN", "DOE", true, 3);
+        TrainerUpdateDto dto = new TrainerUpdateDto("JOHN", "DOE", true, 1);
         String username = "John.Doe";
         Trainer trainer = new Trainer();
         Trainer trainer1 = new Trainer();
         Trainer updatedTrainer = new Trainer();
+        TrainingType trainingType = new TrainingType();
+        trainingType.setId(1);
         Mockito.when(trainerRepository.findTrainerByUser_UserName(username))
                 .thenReturn(Optional.of(trainer));
-        Mockito.when(trainerMapper.partialUpdate(dto, trainer))
+        Mockito.when(trainingTypeService.getTrainingTypeById(1))
+                        .thenReturn(trainingType);
+        Mockito.when(trainerMapper.partialUpdate(dto, trainingType, trainer))
                 .thenReturn(trainer1);
         Mockito.when(trainerRepository.save(trainer1))
                 .thenReturn(updatedTrainer);
         Mockito.when(trainerMapper.toDto(updatedTrainer))
-                .thenReturn(new TrainerDto("JOHN", "DOE", true, 3, null));
+                .thenReturn(new TrainerDto("JOHN", "DOE", true, 1, null));
 
         trainerService.update(dto, username);
 
         Mockito.verify(trainerRepository).findTrainerByUser_UserName(username);
-        Mockito.verify(trainerMapper).partialUpdate(dto, trainer);
+        Mockito.verify(trainerMapper).partialUpdate(dto, trainingType, trainer);
         Mockito.verify(trainerRepository).save(trainer1);
         Mockito.verify(trainerMapper).toDto(updatedTrainer);
     }
@@ -224,7 +233,7 @@ class TrainerServiceTest {
 
         Assertions.assertEquals("Trainer not found", exception.getMessage());
         Mockito.verify(trainerRepository).findTrainerByUser_UserName(username);
-        Mockito.verify(trainerMapper, Mockito.never()).partialUpdate(Mockito.any(), Mockito.any());
+        Mockito.verify(trainerMapper, Mockito.never()).partialUpdate(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.verify(trainerRepository, Mockito.never()).save(Mockito.any());
         Mockito.verify(trainerMapper, Mockito.never()).toDto(Mockito.any());
     }

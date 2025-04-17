@@ -9,7 +9,7 @@ import java.util.List;
 
 public record TraineeDto(String firstName,
                          String lastName,
-                         boolean isActive,
+                         Boolean isActive,
                          Date dateOfBirth,
                          String address,
                          @JsonProperty("trainers")

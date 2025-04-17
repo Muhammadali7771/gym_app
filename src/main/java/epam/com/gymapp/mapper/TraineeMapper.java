@@ -24,7 +24,7 @@ public class TraineeMapper {
         User user = new User();
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
-        user.setActive(true);
+        user.setIsActive(true);
 
         Trainee trainee = new Trainee();
         trainee.setAddress(dto.address());
@@ -42,8 +42,9 @@ public class TraineeMapper {
         if (dto.lastName() != null) {
             user.setLastName(dto.lastName());
         }
-        user.setActive(dto.isActive());
-
+        if (dto.isActive() != null) {
+            user.setIsActive(dto.isActive());
+        }
         if (dto.address() != null) {
             trainee.setAddress(dto.address());
         }
@@ -65,11 +66,11 @@ public class TraineeMapper {
         for (Trainer trainer : trainers) {
             User trainerUser = trainer.getUser();
             TrainerShortDto trainerShortDto = new TrainerShortDto(trainerUser.getUserName(),trainerUser.getFirstName(), trainerUser.getLastName(),
-                    trainerUser.isActive(), trainer.getSpecialization().getId());
+                    trainerUser.getIsActive(), trainer.getSpecialization().getId());
             trainerShortDtos.add(trainerShortDto);
         }
 
-        TraineeDto traineeDto = new TraineeDto(user.getFirstName(), user.getLastName(), user.isActive(), trainee.getDateOfBirth(),
+        TraineeDto traineeDto = new TraineeDto(user.getFirstName(), user.getLastName(), user.getIsActive(), trainee.getDateOfBirth(),
                 trainee.getAddress(), trainerShortDtos);
         return traineeDto;
     }

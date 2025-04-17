@@ -31,6 +31,7 @@ class TrainingRepositoryTest {
         user1.setLastName("Valiyev");
         user1.setUserName("Ali.Valiyev");
         user1.setPassword("111");
+        user1.setIsActive(true);
         trainee1.setUser(user1);
         traineeRepository.save(trainee1);
 
@@ -40,6 +41,7 @@ class TrainingRepositoryTest {
         user2.setLastName("Sobirov");
         user2.setUserName("Botir.Sobirov");
         user2.setPassword("222");
+        user2.setIsActive(true);
         trainer1.setUser(user2);
         trainerRepository.save(trainer1);
 

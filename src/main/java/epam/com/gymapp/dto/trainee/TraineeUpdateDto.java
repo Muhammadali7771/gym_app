@@ -6,7 +6,7 @@ import java.util.Date;
 
 public record TraineeUpdateDto(String firstName,
                                String lastName,
-                               boolean isActive,
+                               Boolean isActive,
                                Date dateOfBirth,
                                String address) {
 }

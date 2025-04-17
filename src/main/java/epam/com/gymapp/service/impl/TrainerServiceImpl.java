@@ -12,13 +12,16 @@ import epam.com.gymapp.dto.trainer.TrainerUpdateDto;
 import epam.com.gymapp.dto.training.TrainingDto;
 import epam.com.gymapp.entity.Trainer;
 import epam.com.gymapp.entity.Training;
+import epam.com.gymapp.entity.TrainingType;
 import epam.com.gymapp.entity.User;
 import epam.com.gymapp.exception.ResourceNotFoundException;
 import epam.com.gymapp.mapper.TrainerMapper;
 import epam.com.gymapp.mapper.TrainingMapper;
 import epam.com.gymapp.repository.TrainerRepository;
 import epam.com.gymapp.repository.TrainingRepository;
+import epam.com.gymapp.repository.TrainingTypeRepository;
 import epam.com.gymapp.service.TrainerService;
+import epam.com.gymapp.service.TrainingTypeService;
 import epam.com.gymapp.util.UsernamePasswordGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +45,11 @@ public class TrainerServiceImpl implements TrainerService {
     private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final TrainingTypeService trainingTypeService;
 
     public RegistrationResponseDto create(TrainerCreateDto dto){
-        Trainer trainer = trainerMapper.toEntity(dto);
+        TrainingType trainingType = trainingTypeService.getTrainingTypeById(dto.specializationId());
+        Trainer trainer = trainerMapper.toEntity(dto, trainingType);
         String username = usernamePasswordGenerator
                 .generateUsername(dto.firstName(), dto.lastName());
         String password = usernamePasswordGenerator.generatePassword();
@@ -91,7 +96,8 @@ public class TrainerServiceImpl implements TrainerService {
                     log.warn("Trainer not found with username : {}", username);
                     return new ResourceNotFoundException("Trainer not found");
                 });
-        Trainer trainer1 = trainerMapper.partialUpdate(dto, trainer);
+        TrainingType trainingType = trainingTypeService.getTrainingTypeById(dto.specializationId());
+        Trainer trainer1 = trainerMapper.partialUpdate(dto, trainingType,trainer);
         Trainer updatedTrainer = trainerRepository.save(trainer1);
         return trainerMapper.toDto(updatedTrainer);
     }

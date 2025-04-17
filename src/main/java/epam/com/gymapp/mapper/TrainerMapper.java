@@ -17,13 +17,8 @@ import java.util.List;
 
 @Component
 public class TrainerMapper {
-    private final TrainingTypeServiceImpl trainingTypeService;
 
-    public TrainerMapper(TrainingTypeServiceImpl trainingTypeService) {
-        this.trainingTypeService = trainingTypeService;
-    }
-
-    public Trainer toEntity(TrainerCreateDto dto) {
+    public Trainer toEntity(TrainerCreateDto dto, TrainingType trainingType) {
         if (dto == null) {
             return null;
         }
@@ -31,18 +26,16 @@ public class TrainerMapper {
         User user = new User();
         user.setLastName(dto.lastName());
         user.setFirstName(dto.firstName());
-        user.setActive(true);
+        user.setIsActive(true);
 
         Trainer trainer = new Trainer();
-        Integer trainingTypeId = dto.specializationId();
-        TrainingType trainingType = trainingTypeService.getTrainingTypeById(trainingTypeId);
         trainer.setSpecialization(trainingType);
         trainer.setUser(user);
 
         return trainer;
     }
 
-    public Trainer partialUpdate(TrainerUpdateDto dto, Trainer trainer) {
+    public Trainer partialUpdate(TrainerUpdateDto dto, TrainingType trainingType, Trainer trainer) {
         User user = trainer.getUser();
         if (dto.firstName() != null) {
             user.setFirstName(dto.firstName());
@@ -50,12 +43,10 @@ public class TrainerMapper {
         if (dto.lastName() != null) {
             user.setLastName(dto.lastName());
         }
-        user.setActive(dto.isActive());
-
-        Integer trainingTypeId = dto.specializationId();
-        TrainingType trainingType = trainingTypeService.getTrainingTypeById(trainingTypeId);
+        if (dto.isActive() != null){
+            user.setIsActive(dto.isActive());
+        }
         trainer.setSpecialization(trainingType);
-
         return trainer;
     }
 
@@ -71,10 +62,10 @@ public class TrainerMapper {
         for (Trainee trainee : trainees) {
             User traineeUser = trainee.getUser();
             TraineeShortDto traineeShortDto = new TraineeShortDto(traineeUser.getUserName(),traineeUser.getFirstName(), traineeUser.getLastName(),
-                    traineeUser.isActive());
+                    traineeUser.getIsActive());
             traineeShortDtos.add(traineeShortDto);
         }
-        TrainerDto trainerDto = new TrainerDto(user.getFirstName(), user.getLastName(), user.isActive(), trainer.getSpecialization().getId(), traineeShortDtos);
+        TrainerDto trainerDto = new TrainerDto(user.getFirstName(), user.getLastName(), user.getIsActive(), trainer.getSpecialization().getId(), traineeShortDtos);
         return trainerDto;
     }
 
@@ -87,7 +78,7 @@ public class TrainerMapper {
         TrainerShortDto trainerShortDto = new TrainerShortDto(user.getFirstName(),
                 user.getLastName(),
                 user.getUserName(),
-                user.isActive(),
+                user.getIsActive(),
                 trainer.getSpecialization().getId());
         return trainerShortDto;
     }
