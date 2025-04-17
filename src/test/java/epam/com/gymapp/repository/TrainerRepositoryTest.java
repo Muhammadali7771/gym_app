@@ -31,7 +31,7 @@ class TrainerRepositoryTest {
         user.setLastName("Sobirov");
         user.setUserName("Botir.Sobirov");
         user.setPassword("777");
-        user.setActive(true);
+        user.setIsActive(true);
         trainer.setUser(user);
         trainerRepository.save(trainer);
     }
@@ -91,12 +91,12 @@ class TrainerRepositoryTest {
 
         Optional<Trainer> trainerOptional1 = trainerRepository.findTrainerByUser_UserName("Botir.Sobirov");
         Trainer trainer1 = trainerOptional1.get();
-        Assertions.assertFalse(trainer1.getUser().isActive());
+        Assertions.assertFalse(trainer1.getUser().getIsActive());
 
         trainerRepository.activateOrDeactivateTrainer("Botir.Sobirov");
         Optional<Trainer> trainerOptional2 = trainerRepository.findTrainerByUser_UserName("Botir.Sobirov");
         Trainer trainer2 = trainerOptional2.get();
-        Assertions.assertTrue(trainer2.getUser().isActive());
+        Assertions.assertTrue(trainer2.getUser().getIsActive());
     }
 
     @Test
@@ -107,6 +107,7 @@ class TrainerRepositoryTest {
         user.setLastName("Valiyev");
         user.setUserName("Ali.Valiyev");
         user.setPassword("777");
+        user.setIsActive(true);
         trainee.setUser(user);
 
 
@@ -116,6 +117,7 @@ class TrainerRepositoryTest {
         user2.setLastName("Toyirov");
         user2.setUserName("Qahramon.Toyirov");
         user2.setPassword("333");
+        user2.setIsActive(true);
         trainer2.setUser(user2);
         trainerRepository.save(trainer2);
 
@@ -125,6 +127,7 @@ class TrainerRepositoryTest {
         user3.setLastName("Nabiyev");
         user3.setUserName("Shamshod.Nabiyev");
         user3.setPassword("333");
+        user3.setIsActive(true);
         trainer3.setUser(user3);
         trainerRepository.save(trainer3);
 
@@ -148,6 +151,7 @@ class TrainerRepositoryTest {
         user.setLastName("Toyirov");
         user.setUserName("Qahramon.Toyirov");
         user.setPassword("333");
+        user.setIsActive(true);
         trainer2.setUser(user);
         trainerRepository.save(trainer2);
 
@@ -167,6 +171,7 @@ class TrainerRepositoryTest {
         user.setLastName("Toyirov");
         user.setUserName("Qahramon.Toyirov");
         user.setPassword("333");
+        user.setIsActive(true);
         trainer2.setUser(user);
         trainerRepository.save(trainer2);
 

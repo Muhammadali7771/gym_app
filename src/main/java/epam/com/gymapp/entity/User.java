@@ -23,7 +23,7 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
     @Column(name = "login_attempts")
     private int loginAttempts;
     @Column(name = "lock_time")

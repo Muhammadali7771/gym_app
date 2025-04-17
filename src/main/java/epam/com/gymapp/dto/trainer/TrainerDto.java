@@ -8,7 +8,7 @@ import java.util.List;
 
 public record TrainerDto(String firstName,
                          String lastName,
-                         boolean isActive,
+                         Boolean isActive,
                          Integer specializationId,
                          @JsonProperty("trainee_list")
                          List<TraineeShortDto> traineeShortDtos) {

@@ -23,7 +23,7 @@ class TraineeRepositoryTest {
         user.setLastName("Valiyev");
         user.setUserName("Ali.Valiyev");
         user.setPassword("111");
-        user.setActive(true);
+        user.setIsActive(true);
         trainee.setUser(user);
         trainee.setAddress("Tashkent");
         trainee.setDateOfBirth(new Date());
@@ -78,13 +78,13 @@ class TraineeRepositoryTest {
         Optional<Trainee> traineeOptional1 = traineeRepository.findTraineeByUser_UserName("Ali.Valiyev");
         Trainee trainee1 = traineeOptional1.get();
 
-        Assertions.assertFalse(trainee1.getUser().isActive());
+        Assertions.assertFalse(trainee1.getUser().getIsActive());
 
         traineeRepository.activateOrDeactivateTrainee("Ali.Valiyev");
         Optional<Trainee> traineeOptional2 = traineeRepository.findTraineeByUser_UserName("Ali.Valiyev");
         Trainee trainee2 = traineeOptional2.get();
 
-        Assertions.assertTrue(trainee2.getUser().isActive());
+        Assertions.assertTrue(trainee2.getUser().getIsActive());
     }
 
     @Test
