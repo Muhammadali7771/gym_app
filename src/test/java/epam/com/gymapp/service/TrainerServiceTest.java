@@ -1,8 +1,10 @@
 package epam.com.gymapp.service;
 
+import epam.com.gymapp.config.security.JwtTokenService;
 import epam.com.gymapp.dto.ChangeLoginDto;
 import epam.com.gymapp.dto.LoginRequestDto;
 import epam.com.gymapp.dto.RegistrationResponseDto;
+import epam.com.gymapp.dto.TokenResponse;
 import epam.com.gymapp.dto.trainer.TrainerCreateDto;
 import epam.com.gymapp.dto.trainer.TrainerDto;
 import epam.com.gymapp.dto.trainer.TrainerUpdateDto;
@@ -24,6 +26,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +52,12 @@ class TrainerServiceTest {
     private TrainingRepository trainingRepository;
     @Mock
     private TrainingMapper trainingMapper;
+    @Mock
+    private JwtTokenService jwtTokenService;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     void create() {
@@ -52,10 +65,15 @@ class TrainerServiceTest {
         Trainer trainer = new Trainer();
         User user = new User();
         trainer.setUser(user);
+        String encodedPassword = "werwrffver123fd";
+        String generatedPassword = "5555555555";
+        String generatedUsername = "Botir.Sobirov";
+
         Mockito.when(trainerMapper.toEntity(dto)).thenReturn(trainer);
         Mockito.when(usernamePasswordGenerator.generateUsername(dto.firstName(), dto.lastName()))
-                .thenReturn("Botir.Sobirov");
-        Mockito.when(usernamePasswordGenerator.generatePassword()).thenReturn("5555555555");
+                .thenReturn(generatedUsername);
+        Mockito.when(usernamePasswordGenerator.generatePassword()).thenReturn(generatedPassword);
+        Mockito.when(passwordEncoder.encode(generatedPassword)).thenReturn(encodedPassword);
         Mockito.when(trainerRepository.save(trainer)).thenReturn(trainer);
 
         RegistrationResponseDto responseDto = trainerService.create(dto);
@@ -64,31 +82,42 @@ class TrainerServiceTest {
         Mockito.verify(usernamePasswordGenerator).generateUsername(dto.firstName(), dto.lastName());
         Mockito.verify(usernamePasswordGenerator).generatePassword();
         Mockito.verify(trainerRepository).save(trainer);
-        Assertions.assertEquals("Botir.Sobirov", responseDto.username());
-        Assertions.assertEquals("5555555555", responseDto.password());
+        Assertions.assertEquals(generatedUsername, responseDto.username());
+        Assertions.assertEquals(generatedPassword, responseDto.password());
+        Assertions.assertEquals(generatedUsername, trainer.getUser().getUserName());
+        Assertions.assertEquals(encodedPassword, trainer.getUser().getPassword());
     }
 
     @Test
     void login_Success() {
-        LoginRequestDto dto = new LoginRequestDto("Botir.Sobirov", "1234567");
-        Mockito.when(trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.password()))
-                .thenReturn(true);
+        String username = "Botir.Sobirov";
+        String password = "1234567";
+        String token = "sdfsdfsdfwerwe345dgfgdfgdfg";
+        LoginRequestDto dto = new LoginRequestDto(username, password);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication = Mockito.mock(Authentication.class);
 
-        trainerService.login(dto);
+        Mockito.when(authenticationManager.authenticate(usernamePasswordAuthenticationToken)).thenReturn(authentication);
+        Mockito.when(jwtTokenService.generateToken(username)).thenReturn(token);
 
-        Mockito.verify(trainerRepository).checkUsernameAndPasswordMatch(dto.username(), dto.password());
+        TokenResponse tokenResponse = trainerService.login(dto);
+
+        Mockito.verify(authenticationManager).authenticate(usernamePasswordAuthenticationToken);
+        Mockito.verify(jwtTokenService).generateToken(username);
+        Assertions.assertEquals(token, tokenResponse.token());
     }
 
     @Test
     void login_throwsException() {
-        LoginRequestDto dto = new LoginRequestDto("Botir.Sobirov", "1234567");
-        Mockito.when(trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.password()))
-                .thenReturn(false);
+        String username = "Botir.Sobirov";
+        String password = "1234567";
+        LoginRequestDto dto = new LoginRequestDto(username, password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        Mockito.when(authenticationManager.authenticate(authenticationToken)).thenThrow(BadCredentialsException.class);
 
-        AuthenticationException exception = assertThrows(AuthenticationException.class, () -> trainerService.login(dto));
+        Assertions.assertThrows(BadCredentialsException.class ,() -> trainerService.login(dto));
 
-        Assertions.assertEquals("username or password is incorrect!", exception.getMessage());
-        Mockito.verify(trainerRepository).checkUsernameAndPasswordMatch(dto.username(), dto.password());
+        Mockito.verify(jwtTokenService, Mockito.never()).generateToken(Mockito.anyString());
     }
 
     @Test
@@ -122,26 +151,41 @@ class TrainerServiceTest {
 
     @Test
     void changePassword_Success() {
-        ChangeLoginDto dto = new ChangeLoginDto("John.Doe", "123", "777");
-        Mockito.when(trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword()))
-                .thenReturn(true);
-        Mockito.doNothing().when(trainerRepository).changePassword(dto.username(), dto.newPassword());
+        String username = "John.Doe";
+        String oldPassword = "123";
+        String newPassword = "777";
+        String encodedPassword = "swerwr2342342";
+        ChangeLoginDto dto = new ChangeLoginDto(username, oldPassword, newPassword);
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, oldPassword);
+        Authentication authentication = Mockito.mock(Authentication.class);
+
+        Mockito.when(authenticationManager.authenticate(usernamePasswordAuthenticationToken)).thenReturn(authentication);
+        Mockito.when(passwordEncoder.encode(newPassword)).thenReturn(encodedPassword);
+        Mockito.doNothing().when(trainerRepository).changePassword(username, encodedPassword);
 
         trainerService.changePassword(dto);
 
-        Mockito.verify(trainerRepository).checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword());
-        Mockito.verify(trainerRepository).changePassword(dto.username(), dto.newPassword());
+        Mockito.verify(authenticationManager).authenticate(usernamePasswordAuthenticationToken);
+        Mockito.verify(passwordEncoder).encode(newPassword);
+        Mockito.verify(trainerRepository).changePassword(username, encodedPassword);
     }
 
     @Test
     void changePassword_ThrowsException() {
-        ChangeLoginDto dto = new ChangeLoginDto("John.Doe", "123", "777");
-        Mockito.when(trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword()))
-                .thenReturn(false);
+        String username = "John.Doe";
+        String oldPassword = "123";
+        String newPassword = "777";
+        ChangeLoginDto dto = new ChangeLoginDto(username, oldPassword, newPassword);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, oldPassword);
 
-        Assertions.assertThrows(AuthenticationException.class, () -> trainerService.changePassword(dto));
-        Mockito.verify(trainerRepository).checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword());
-        Mockito.verify(trainerRepository, Mockito.never()).changePassword(dto.username(), dto.newPassword());
+        Mockito.when(authenticationManager.authenticate(usernamePasswordAuthenticationToken))
+                .thenThrow(BadCredentialsException.class);
+
+        Assertions.assertThrows(BadCredentialsException.class,() -> trainerService.changePassword(dto));
+
+        Mockito.verify(passwordEncoder, Mockito.never()).encode(newPassword);
+        Mockito.verify(trainerRepository, Mockito.never()).changePassword(username, newPassword);
     }
 
     @Test

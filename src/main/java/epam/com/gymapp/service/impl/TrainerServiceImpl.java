@@ -76,11 +76,6 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public void changePassword(ChangeLoginDto dto) {
-        /*if (!trainerRepository.checkUsernameAndPasswordMatch(dto.username(), dto.oldPassword())) {
-            log.warn("Login failed !");
-            throw new AuthenticationException("username or password is incorrect");
-        }
-        trainerRepository.changePassword(dto.username(), dto.newPassword());*/
         String username = dto.username();
         String oldPassword = dto.oldPassword();
         String newPassword = dto.newPassword();
