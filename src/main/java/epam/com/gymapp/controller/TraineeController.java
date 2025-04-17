@@ -43,7 +43,7 @@ public class TraineeController {
         return ResponseEntity.ok(traineeService.getTraineeByUsername(username));
     }
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(summary = "Register a new trainee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "New Trainee successfully has been registered"),

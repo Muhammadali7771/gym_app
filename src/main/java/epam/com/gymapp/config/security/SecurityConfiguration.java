@@ -46,6 +46,8 @@ public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {
             "/gym.com/api/trainee/login",
             "/gym.com/api/trainer/login",
+            "/gym.com/api/trainee/register",
+            "/gym.com/api/trainer/register",
             "/swagger-ui/**",
             "/v3/api-docs/**"
     };
@@ -55,9 +57,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(req -> req.requestMatchers(HttpMethod.POST, "/gym.com/api/trainee", "/gym.com/api/trainer")
-                        .permitAll()
-                        .requestMatchers(WHITE_LIST_URL)
+                .authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
                         .permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -29,7 +29,7 @@ public class TrainerController {
         this.trainerService = trainerService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(summary = "Register a new trainer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "New Trainer successfully has been registered"),
